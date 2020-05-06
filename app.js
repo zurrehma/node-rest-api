@@ -2,12 +2,24 @@ const express = require('express');
 const morgan = require('morgan');
 const body = require('body-parser');
 const app = express();
+const mongoose = require('mongoose');
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
-//morgan used for logging purpose
+mongoose.connect(
+    'mongodb://node-api:' + process.env.MONG_PW + 
+    '@node-api-shard-00-00-8epfm.mongodb.net:27017, \
+    node-api-shard-00-01-8epfm.mongodb.net:27017, \
+    node-api-shard-00-02-8epfm.mongodb.net:27017/test?ssl=true&replicaSet=node-api-shard-0&authSource=admin&retryWrites=true&w=majority',
+    {useNewUrlParser: true}
+)
+mongoose.connection.on('connected', () => console.log('Connected'));
+mongoose.connection.on('error', (err) => console.log('Connection failed with - ',err));
+
 app.use(morgan('dev'));
+
 app.use(body.urlencoded({ extended: false }));
+
 app.use(body.json({}));
 
 app.use((req, res, next) => {
@@ -23,6 +35,7 @@ app.use((req, res, next) => {
 });
 //routes which will handle incoming requests
 app.use('/products', productRoutes);
+
 app.use('/orders', orderRoutes);
 
 app.use(function(req, res, next) {
