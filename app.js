@@ -6,20 +6,26 @@ const mongoose = require('mongoose');
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
-mongoose.connect(
-    'mongodb://node-api:' + process.env.MONG_PW + 
+const connection = mongoose.connect(
+    'mongodb://' + process.env.MONG_UN + ':' + process.env.MONG_PW + 
     '@node-api-shard-00-00-8epfm.mongodb.net:27017, \
     node-api-shard-00-01-8epfm.mongodb.net:27017, \
     node-api-shard-00-02-8epfm.mongodb.net:27017/test?ssl=true&replicaSet=node-api-shard-0&authSource=admin&retryWrites=true&w=majority',
-    {useNewUrlParser: true}
+    {
+        useNewUrlParser: true,
+        // useUnifiedTopology: true
+    }
 )
+// connection.then(res => {
+//     console.log('Connected');
+// });
+// connection.catch(err => {
+//     console.log('error zahid '+ err)
+// });
 mongoose.connection.on('connected', () => console.log('Connected'));
 mongoose.connection.on('error', (err) => console.log('Connection failed with - ',err));
-
 app.use(morgan('dev'));
-
 app.use(body.urlencoded({ extended: false }));
-
 app.use(body.json({}));
 
 app.use((req, res, next) => {
